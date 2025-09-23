@@ -1,0 +1,2 @@
+Struct, Methods, Interface, Composition
+Maqsad: custom turlarga metodlar yozish, interface’lar orqali polymorphism, composition (embedding).
