@@ -28,4 +28,9 @@ func main(){
 	
 	phonebook[54546546] = "bowser"
 	fmt.Println(phonebook)
+
+	name := "Oybek"
+
+	copyName := &name
+	fmt.Println(*copyName)
 }
