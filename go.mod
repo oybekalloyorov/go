@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-module SALOM
-
 go 1.25.1
-=======
+
 module github.com/you/my-telegram-bot
 
-go 1.25.1
-
-require github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
-
-
->>>>>>> 260e703 (Add telegram bot project files)
+require github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
