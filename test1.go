@@ -28,4 +28,6 @@ func main(){
 
 	fn3, sn3 := getInitials("oybek")
 	fmt.Println(fn3, sn3)
+
+	// sayGreeting("Alloyorov") // bu qator ishlashi uchun test.go fayldagi main function bo'lmasligi kerak
 }
