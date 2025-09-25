@@ -1,0 +1,4 @@
+Bill breakdown: 
+5:                        ...$8.56 
+tip:                      ...$5.60
+total:                    ...$14.16
