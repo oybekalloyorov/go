@@ -17,29 +17,21 @@ func handleClientProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetClientProfile(w http.ResponseWriter, r *http.Request) {
-	var clientId = r.URL.Query().Get("clientId")
-	clientProfile, ok := database[clientId]
-	if !ok || clientId == "" {
-		http.Error(w, "Forbidden", http.StatusNotFound)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-
+	clientProfile := r.Context().Value("clientProfile").(DatabaseProfile)
+	
 	response := ClientProfile{
 		Email: clientProfile.Email,
 		Name:  clientProfile.Name,
 		Id:    clientProfile.Id,
 	}
+	
+	w.Header().Set("Content-Type", "application/json")
+	
 	json.NewEncoder(w).Encode(response)
 }
 
 func UpdateClientProfile(w http.ResponseWriter, r *http.Request) {
-	var clientId = r.URL.Query().Get("clientId")
-	clientProfile, ok := database[clientId]
-	if !ok || clientId == "" {
-		http.Error(w, "Forbidden", http.StatusNotFound)
-		return
-	}
+	clientProfile := r.Context().Value("clientProfile").(DatabaseProfile)
 
 	var payloadData ClientProfile
 	if err := json.NewDecoder(r.Body).Decode(&payloadData); err != nil {
