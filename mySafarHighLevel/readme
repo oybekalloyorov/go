@@ -1,0 +1,4 @@
+$env:API_TOKEN = "7fd08e9d8f99024540fb094f50b6acf3dda89b7f"
+
+go run ./cmd/req --from=TAS --to=DXB --date=25.10.2025 --url=https://api.mysafar.ru/v1/avia/get-recommendations --debug
+natijani result.json shu faylga yozadi
