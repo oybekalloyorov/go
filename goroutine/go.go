@@ -28,16 +28,20 @@ func tayyorlash(taom Taom) {
 }
 
 func main() {
-	fmt.Println(time.Now())
+	now := time.Now()
 	buyurtmalar := []Buyurtma{
 		{1,  []Taom{Salat, Shorva, AsosiyTaom}},
+		{2,  []Taom{Salat, Shorva, AsosiyTaom}},
+		{3,  []Taom{Salat, Shorva, AsosiyTaom}},
+		{4,  []Taom{Salat, Shorva, AsosiyTaom}},
 	}
 
 	for _, buyurtma := range buyurtmalar {
 		for _, taom := range buyurtma.Taomlar {
-			tayyorlash(taom)
+			go tayyorlash(taom)
 		}
 	}
-	// fmt.Println("Barcha buyurtmalar tayyor!")
+	time.Sleep(6 * time.Second) // Barcha taomlar tayyor bo'lishi uchun kutamiz
+	fmt.Println("Umumiy vaqt:", time.Since(now))
 
 }
