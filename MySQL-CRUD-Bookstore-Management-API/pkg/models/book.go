@@ -2,7 +2,8 @@ package models
 
 import(
 	"github.com/jinzhu/gorm"
-	"github.com/akhil/go-bookstore/pkg/config"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/oybekalloyorov/MySQL-CRUD-Bookstore-Management-API/pkg/config"
 )
 
 var db *gorm.DB
