@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -65,6 +66,51 @@ func GetToDoObjectsHTTP(c *gin.Context, db *sql.DB){
 	c.JSON(http.StatusOK, gin.H{"response": res })
 }
 
+// ✅ GetByID handler
+func GetToDoByIDHTTP(c *gin.Context, db *sql.DB) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	res, err := GetToDoByID(db, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"response": res})
+}
+
+// ✅ DeleteByID handler
+func DeleteToDoByIDHTTP(c *gin.Context, db *sql.DB) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	rows, err := DeleteToDoByID(db, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if rows == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "no record deleted"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
+}
+
 func main() {
 	cfg := DBConfig{
 		Host:     "localhost",
@@ -92,6 +138,14 @@ func main() {
 
 	router.GET("/api/v1/get-all", func(c *gin.Context) {
 		GetToDoObjectsHTTP(c, db)
+	})
+
+	router.GET("/api/v1/get/:id", func(c *gin.Context) {
+		GetToDoByIDHTTP(c, db)
+	})
+
+	router.DELETE("/api/v1/delete/:id", func(c *gin.Context) {
+		DeleteToDoByIDHTTP(c, db)
 	})
 
 	router.Run(":7000")
@@ -147,7 +201,34 @@ func GetToDoObjects(db *sql.DB) ([]*ToDoObbject, error){
 	}
 	return result, nil
 }
+// ✅ GetByID function
+func GetToDoByID(db *sql.DB, id int) (*ToDoObbject, error) {
+	query := `SELECT id, title, created_at FROM taskstest WHERE id=$1;`
 
+	var obj ToDoObbject
+	err := db.QueryRow(query, id).Scan(&obj.ID, &obj.Title, &obj.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+// ✅ DeleteByID function
+func DeleteToDoByID(db *sql.DB, id int) (int64, error) {
+	query := `DELETE FROM taskstest WHERE id=$1;`
+
+	res, err := db.Exec(query, id)
+	if err != nil {
+		return 0, err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return rows, nil
+}
 type ToDoObbject struct{
 	ID int `json:"id"`
 	Title string `json:"title"`
