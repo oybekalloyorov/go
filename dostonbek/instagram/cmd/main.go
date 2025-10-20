@@ -34,6 +34,8 @@ func main() {
 	router.PATCH("/api/v1/update-post", postController.UpdatePostHTTP)
 	router.POST("/api/v1/create-post", postController.CreatePostHTTP)
 	router.GET("/api/v1/get-all-posts", postController.GetAllPostsHTTP)
+	router.GET("/api/v1/get-posts-byid/:id", postController.GetToDoByIDHTTP)
+	router.DELETE("/api/v1/delete/:id", postController.DeleteByIDHTTP)
 
 	router.Run(":8000")
 }

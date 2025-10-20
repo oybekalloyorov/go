@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/models"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -59,4 +60,35 @@ func (p *PostController) GetAllPostsHTTP(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"response": res})
+}
+
+func (p * PostController) GetToDoByIDHTTP(c *gin.Context){
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if  err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+	res, err := p.postService.GetPostByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (p * PostController) DeleteByIDHTTP(c *gin.Context){
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	err = p.postService.DeleteByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "post deleted successfully"})
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"oybekalloyorov/salom/dostonbek/instagram/internal/models"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/repository"
+
 )
 
 type PostService struct{
@@ -29,4 +30,12 @@ func (s *PostService) CreatePost(req *models.Post) (*models.Post, error){
 
 func (s *PostService) GetAllPosts() ([]*models.Post, error){
 	return s.repo.GetAllPosts()
+}
+
+func (s *PostService) GetPostByID(id int)(*models.Post, error){
+	return s.repo.GetPostByID(id)
+}
+
+func (s *PostService) DeleteByID(id int) error{
+	return  s.repo.DeletePostByID(id)
 }
