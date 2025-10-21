@@ -23,8 +23,16 @@ func main(){
         keys = append(keys, k)
     }
     sort.Strings(keys)
-
+    
+	maxsimum := 0
+	soz := ""
     for _, k := range keys {
         fmt.Printf("%s -> %d ", k, counts[k])
-    }	
+		if counts[k] > maxsimum {
+			maxsimum = counts[k]
+			soz = k
+		}
+    }
+
+	fmt.Println(maxsimum, soz)
 }

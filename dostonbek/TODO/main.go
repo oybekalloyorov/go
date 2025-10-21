@@ -41,6 +41,7 @@ func ConnectPostgres(cfg DBConfig) (*sql.DB, error) {
 
   return db, nil
 }
+
 func CreateToDoObjectHTTP(c *gin.Context, db *sql.DB) {
 	var req ToDoObbject
 	if err := c.ShouldBindJSON(&req); err != nil {

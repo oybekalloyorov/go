@@ -21,18 +21,18 @@ type DBConfig struct {
 	SSLMode  string
 }
 
-func ConnectPostgress(ctg DBConfig)(*sql.DB, error){
+func ConnectPostgress(ctg DBConfig) (*sql.DB, error) {
 	dns := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		ctg.Host, ctg.Port, ctg.User, ctg.Password, ctg.DBName, ctg.SSLMode,
 	)
 
 	db, err := sql.Open("postgres", dns)
-	if (err != nil) {
+	if err != nil {
 		return nil, fmt.Errorf("Failed to open connection: %w", err)
 	}
 
-	 // Test the connection
+	// Test the connection
 	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
@@ -40,11 +40,11 @@ func ConnectPostgress(ctg DBConfig)(*sql.DB, error){
 	return db, nil
 }
 
-func CreateToDoObjectHTTP(c *gin.Context, db *sql.DB){
+func CreateToDoObjectHTTP(c *gin.Context, db *sql.DB) {
 	var req ToDoObbject
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
-		return 
+		return
 	}
 
 	res, err := CreateToDoObject(db, &req)
@@ -56,14 +56,14 @@ func CreateToDoObjectHTTP(c *gin.Context, db *sql.DB){
 	c.JSON(http.StatusOK, gin.H{"response": res})
 }
 
-func GetToDoObjectsHTTP(c *gin.Context, db *sql.DB){
+func GetToDoObjectsHTTP(c *gin.Context, db *sql.DB) {
 	res, err := GetToDoObjects(db)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"response": res })
+	c.JSON(http.StatusOK, gin.H{"response": res})
 }
 
 // ✅ GetByID handler
@@ -152,7 +152,7 @@ func main() {
 
 }
 
-func CreateToDoObject(db *sql.DB, obj *ToDoObbject)(*ToDoObbject, error){
+func CreateToDoObject(db *sql.DB, obj *ToDoObbject) (*ToDoObbject, error) {
 	obj.CreatedAt = time.Now()
 
 	query := `
@@ -173,7 +173,7 @@ func CreateToDoObject(db *sql.DB, obj *ToDoObbject)(*ToDoObbject, error){
 	return &result, nil
 }
 
-func GetToDoObjects(db *sql.DB) ([]*ToDoObbject, error){
+func GetToDoObjects(db *sql.DB) ([]*ToDoObbject, error) {
 	query := `
 		SELECT id, title, created_at from taskstest;
 	`
@@ -188,7 +188,7 @@ func GetToDoObjects(db *sql.DB) ([]*ToDoObbject, error){
 
 	defer res.Close()
 
-	for res.Next(){
+	for res.Next() {
 		var obj ToDoObbject
 		if err := res.Scan(&obj.ID, &obj.Title, &obj.CreatedAt); err != nil {
 			log.Fatalln(err.Error())
@@ -201,6 +201,7 @@ func GetToDoObjects(db *sql.DB) ([]*ToDoObbject, error){
 	}
 	return result, nil
 }
+
 // ✅ GetByID function
 func GetToDoByID(db *sql.DB, id int) (*ToDoObbject, error) {
 	query := `SELECT id, title, created_at FROM taskstest WHERE id=$1;`
@@ -229,8 +230,9 @@ func DeleteToDoByID(db *sql.DB, id int) (int64, error) {
 
 	return rows, nil
 }
-type ToDoObbject struct{
-	ID int `json:"id"`
-	Title string `json:"title"`
+
+type ToDoObbject struct {
+	ID        int       `json:"id"`
+	Title     string    `json:"title"`
 	CreatedAt time.Time `json:"created_at"`
 }
