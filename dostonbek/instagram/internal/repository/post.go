@@ -21,16 +21,16 @@ func (p *PostRepo) CreatePost(obj *models.Post) (*models.Post, error) {
 	obj.CreatedAt = time.Now()
 
 	query := `
-		INSERT INTO post (title,description, likes_count, created_at)
-		VALUES ($1, $2, $3, $4)
-		RETURNING id, title, description, likes_count, created_at;
+		INSERT INTO post (title,description, likes_count, created_at, created_by)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, title, description, likes_count, created_at, created_by;
 	`
 
 	var result models.Post
 
-	res := p.db.QueryRow(query, obj.Title, obj.Description, obj.LikesCount, obj.CreatedAt)
+	res := p.db.QueryRow(query, obj.Title, obj.Description, obj.LikesCount, obj.CreatedAt, obj.CreatedBy)
 
-	if err := res.Scan(&result.ID, &result.Title, &result.Description, &result.LikesCount, &result.CreatedAt); err != nil {
+	if err := res.Scan(&result.ID, &result.Title, &result.Description, &result.LikesCount, &result.CreatedAt, &obj.CreatedBy); err != nil {
 		log.Println("Failed to parse")
 		return nil, err
 	}
@@ -40,11 +40,11 @@ func (p *PostRepo) CreatePost(obj *models.Post) (*models.Post, error) {
 
 func (p *PostRepo) GetPostByID(id int) (*models.Post, error) {
 	query := `
-		SELECT id, title, description, likes_count, created_at from post where id=$1;
+		SELECT id, title, description, likes_count, created_at, created_by from post where id=$1;
 	`
 	var object models.Post
 	err := p.db.QueryRow(query, id).Scan(&object.ID, &object.Title, &object.Description,
-		&object.LikesCount, &object.CreatedAt)
+		&object.LikesCount, &object.CreatedAt, &object.CreatedBy)
 
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (p *PostRepo) GetPostByID(id int) (*models.Post, error) {
 
 func (p *PostRepo) GetAllPosts() ([]*models.Post, error) {
 	query := `
-		SELECT id, title, description, likes_count, created_at from post;
+		SELECT id, title, description, likes_count, created_at, created_by from post;
 	`
 	var result []*models.Post
 	res, err := p.db.Query(query)
@@ -68,7 +68,7 @@ func (p *PostRepo) GetAllPosts() ([]*models.Post, error) {
 
 	for res.Next() {
 		var obj models.Post
-		if err := res.Scan(&obj.ID, &obj.Title, &obj.Description, &obj.LikesCount, &obj.CreatedAt); err != nil {
+		if err := res.Scan(&obj.ID, &obj.Title, &obj.Description, &obj.LikesCount, &obj.CreatedAt, &obj.CreatedBy); err != nil {
 			log.Fatalln(err.Error())
 			return nil, err
 		}
@@ -87,9 +87,10 @@ func (p *PostRepo) UpdatePost(obj *models.Post) (*models.Post, error) {
         SET
             title = COALESCE($2, title),
             description = COALESCE($3, description),
-            likes_count = COALESCE($4, likes_count)
+            likes_count = COALESCE($4, likes_count),
+			created_by = COALESCE($5, created_by)
         WHERE id = $1
-        RETURNING id, description, title, likes_count, created_at;
+        RETURNING id, description, title, likes_count, created_at, created_by;
     `
 	var result models.Post
 
@@ -99,6 +100,7 @@ func (p *PostRepo) UpdatePost(obj *models.Post) (*models.Post, error) {
 		obj.Title,
 		obj.Description,
 		obj.LikesCount,
+		obj.CreatedBy,
 	)
 	err := row.Scan(
 		&result.ID,
@@ -106,6 +108,7 @@ func (p *PostRepo) UpdatePost(obj *models.Post) (*models.Post, error) {
 		&result.Title,
 		&result.LikesCount,
 		&result.CreatedAt,
+		&result.CreatedBy,
 	)
 
 	if err != nil {
@@ -130,4 +133,31 @@ func (p *PostRepo) DeletePostByID(id int) error {
 	}
 
 	return nil
+}
+
+func (p *PostRepo) GetPostsByUserID(id int) ([]*models.Post, error) {
+	query := `
+		SELECT id, title, description, likes_count, created_at, created_by from post where created_by=$1;
+	`
+	var res []*models.Post
+	rows, err := p.db.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var obj models.Post
+		if err := rows.Scan(&obj.ID, &obj.Title, &obj.Description, &obj.LikesCount, &obj.CreatedAt, &obj.CreatedBy); err != nil {
+			log.Fatalln(err.Error())
+			return nil, err
+		}
+
+		res = append(res, &obj)
+		if err := rows.Err(); err != nil {
+			log.Println(err.Error())
+		}
+	}
+	return res, nil
 }

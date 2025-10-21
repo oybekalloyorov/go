@@ -92,3 +92,20 @@ func (p * PostController) DeleteByIDHTTP(c *gin.Context){
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "post deleted successfully"})
 }
+
+func (p * PostController) GetPostByUserIDHTTP(c *gin.Context){
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	rows, err := p.postService.GetPostsByUserID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return 
+	}
+	
+	c.JSON(http.StatusOK, gin.H{"response": rows})
+}

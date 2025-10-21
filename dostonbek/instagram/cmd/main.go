@@ -25,17 +25,30 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Posts
 	postRepo := repository.NewPostRepo(db)
 	postService := service.NewPostService(postRepo)
 	postController := controller.NewPostController(postService)
 
+	// Users
+	userRepo := repository.NewUserRepo(db)
+	userService := service.NewUserService(userRepo)
+	userController := controller.NewUserController(userService)
+
 	router := gin.Default()
 
+	// Post Routes
 	router.PATCH("/api/v1/update-post", postController.UpdatePostHTTP)
 	router.POST("/api/v1/create-post", postController.CreatePostHTTP)
 	router.GET("/api/v1/get-all-posts", postController.GetAllPostsHTTP)
 	router.GET("/api/v1/get-posts-byid/:id", postController.GetToDoByIDHTTP)
 	router.DELETE("/api/v1/delete/:id", postController.DeleteByIDHTTP)
+
+	router.GET("/api/v1/get-post-by-userid/:id", postController.GetPostByUserIDHTTP)
+
+	// User routes
+	router.POST("/api/v1/create-user", userController.CreateUserHTTP)
 
 	router.Run(":8000")
 }
