@@ -61,3 +61,19 @@ func (u *UserController)GetAllUsers(req *gin.Context){
 
 	req.JSON(http.StatusOK, res)
 }
+
+func (u *UserController) UpdateUserHTTP(c *gin.Context){
+	var user models.UserModel
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+		return
+	}
+	res, err := u.srv.UpdateUserById(&user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
+}

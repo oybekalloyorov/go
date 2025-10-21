@@ -51,6 +51,7 @@ func main() {
 	router.POST("/api/v1/create-user", userController.CreateUserHTTP)
 	router.GET("/api/v1/get-user-byid/:id", userController.GetUserByIdHTTP)
 	router.GET("/api/v1/get-all-users", userController.GetAllUsers)
+	router.PATCH("/api/v1/update-user", userController.UpdateUserHTTP)
 
 	router.Run(":8000")
 }

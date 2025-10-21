@@ -26,3 +26,11 @@ func (s *UserService) GetUserById(id int)(*models.UserModel, error) {
 func (s *UserService)GetAllUsers()([]*models.UserModel, error){
 	return s.repo.GetAllUsers()
 }
+
+func (s *UserService)UpdateUserById(obj *models.UserModel)(*models.UserModel, error){
+	response, err := s.repo.UpdateUserByID(obj)
+	if err != nil {
+		return nil, err
+	}
+	return  response, err
+}
