@@ -39,3 +39,27 @@ func (u *UserRepo) CreateUser(req *models.UserModel) (*models.UserModel, error){
 
 	return &response, nil
 }
+
+func (u * UserRepo) GetUserById(id int) (*models.UserModel, error){
+	query :=`
+		SELECT id, full_name, username, birth_of_year,bio, created_at from instagram_users where id=$1;
+	`
+
+	var user models.UserModel
+	err := u.db.QueryRow(query, id).Scan(&user.ID, &user.FullName, &user.Username, &user.BirthOfYear, &user.Bio, &user.CreatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
+
+}
+
+/*
+	GetByID bajarildi
+	GetAllUsers
+	UpdateByID
+	DeleteByID
+*/

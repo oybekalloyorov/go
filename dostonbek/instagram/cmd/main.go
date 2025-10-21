@@ -49,6 +49,7 @@ func main() {
 
 	// User routes
 	router.POST("/api/v1/create-user", userController.CreateUserHTTP)
+	router.GET("/api/v1/get-user-byid/:id", userController.GetUserByIdHTTP)
 
 	router.Run(":8000")
 }

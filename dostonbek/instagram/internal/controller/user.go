@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/models"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,18 +19,36 @@ func NewUserController(srv *service.UserService) *UserController{
 	}
 }
 
-func (h *UserController) CreateUserHTTP(req *gin.Context){
+func (u *UserController) CreateUserHTTP(req *gin.Context){
 	var obj models.UserModel
 	err := req.ShouldBindJSON(&obj)
 	if err != nil {
 		req.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
 		return
 	}
-	response, err := h.srv.CreateUser(&obj)
+	response, err := u.srv.CreateUser(&obj)
 	if err != nil {
 		req.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	req.JSON(http.StatusCreated, gin.H{"response": response})
+}
+
+func (u *UserController) GetUserByIdHTTP(req *gin.Context){
+	idStr := req.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		req.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	res, err := u.srv.GetUserById(id)
+	if err != nil {
+		req.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	req.JSON(http.StatusOK, res)
+
 }
