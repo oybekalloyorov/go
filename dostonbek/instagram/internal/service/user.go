@@ -22,3 +22,7 @@ func (s *UserService) CreateUser(req *models.UserModel) (*models.UserModel, erro
 func (s *UserService) GetUserById(id int)(*models.UserModel, error) {
 	return s.repo.GetUserById(id)
 }
+
+func (s *UserService)GetAllUsers()([]*models.UserModel, error){
+	return s.repo.GetAllUsers()
+}

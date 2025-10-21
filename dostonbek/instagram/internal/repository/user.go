@@ -53,8 +53,34 @@ func (u * UserRepo) GetUserById(id int) (*models.UserModel, error){
 	}
 
 	return &user, nil
+}
+func (u *UserRepo) GetAllUsers() ([]*models.UserModel, error){
+	query := `
+		SELECT id, full_name, username, birth_of_year, bio, created_at from instagram_users 
+	`
+	var res []*models.UserModel 
+	rows, err := u.db.Query(query)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+	
+	defer rows.Close()
 
+	for rows.Next(){
+		var obj models.UserModel
+		if err := rows.Scan(&obj.ID, &obj.FullName, &obj.Username, &obj.BirthOfYear, &obj.Bio, &obj.CreatedAt); err != nil {
+			log.Fatalln(err.Error())
+			return nil, err
+		}
 
+		res = append(res, &obj)
+		if err := rows.Err(); err != nil {
+			log.Println(err.Error())
+		}
+	}
+
+	return res, nil
 }
 
 /*

@@ -50,5 +50,14 @@ func (u *UserController) GetUserByIdHTTP(req *gin.Context){
 	}
 
 	req.JSON(http.StatusOK, res)
+}
 
+func (u *UserController)GetAllUsers(req *gin.Context){
+	res, err := u.srv.GetAllUsers()
+	if err != nil{
+		req.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	req.JSON(http.StatusOK, res)
 }
