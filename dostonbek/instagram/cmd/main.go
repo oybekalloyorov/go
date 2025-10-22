@@ -36,6 +36,11 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	userController := controller.NewUserController(userService)
 
+	//Comments
+	commentRepo := repository.NewCommentRepo(db)
+	commentService := service.NewCommentService(commentRepo)
+	commentController := controller.NewCommentController(commentService)
+
 	router := gin.Default()
 
 	// Post Routes
@@ -53,6 +58,14 @@ func main() {
 	router.GET("/api/v1/get-all-users", userController.GetAllUsers)
 	router.PATCH("/api/v1/update-user", userController.UpdateUserHTTP)
 	router.DELETE("/api/v1/delete-user/:id", userController.DeleteUserHTTP)
+
+	//Comments
+	router.POST("/api/v1/create-comment", commentController.CreateCommentHTTP)
+	router.GET("/api/v1/get-comment-by-id/:id", commentController.GetCommentByIdHTTP)
+	router.GET("/api/v1/get-comment-by-user-id/:id", commentController.GetCommentsByUserIdHTTP)
+	router.GET("/api/v1/get-all-comments", commentController.GetAllComments)
+	router.PATCH("/api/v1/update-comment", commentController.UpdateCommentHTTP)
+	
 
 	router.Run(":8000")
 }
