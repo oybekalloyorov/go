@@ -77,3 +77,20 @@ func (u *UserController) UpdateUserHTTP(c *gin.Context){
 
 	c.JSON(http.StatusOK, res)
 }
+
+func (u *UserController) DeleteUserHTTP(c *gin.Context){
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid id"})
+		return
+	}
+
+	err = u.srv.DeleteUserByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User deleted Successfully"})
+}

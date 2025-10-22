@@ -121,6 +121,23 @@ func (u *UserRepo) UpdateUserByID(obj *models.UserModel) (*models.UserModel, err
 	return &res, err
 }
 
+func (u *UserRepo)DeleteUserByID(id int)error{
+	query := `
+		DELETE from instagram_users where id = $1
+	`
+	res, err := u.db.Exec(query, id)
+	if  err != nil {
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
 /*
 	GetByID bajarildi
 	GetAllUsers bajarildi

@@ -34,3 +34,7 @@ func (s *UserService)UpdateUserById(obj *models.UserModel)(*models.UserModel, er
 	}
 	return  response, err
 }
+
+func (s *UserService) DeleteUserByID(id int) error{
+	return s.repo.DeleteUserByID(id)
+}
