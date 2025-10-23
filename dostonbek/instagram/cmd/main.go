@@ -41,6 +41,12 @@ func main() {
 	commentService := service.NewCommentService(commentRepo)
 	commentController := controller.NewCommentController(commentService)
 
+	//Follows
+	followRepo := repository.NewFollowRepo(db)
+	followService := service.NewFollowService(followRepo)
+	followController := controller.NewFollowController(followService)
+
+
 	router := gin.Default()
 
 	// Post Routes
@@ -66,6 +72,7 @@ func main() {
 	router.GET("/api/v1/get-all-comments", commentController.GetAllComments)
 	router.PATCH("/api/v1/update-comment", commentController.UpdateCommentHTTP)
 	
-
+	//Folows
+	router.POST("/api/v1/create-follow", followController.CreateFollowHTTP)
 	router.Run(":8000")
 }
