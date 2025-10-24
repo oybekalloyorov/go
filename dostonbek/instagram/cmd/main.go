@@ -1,15 +1,46 @@
 package main
 
 import (
+	"net/http"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/controller"
+	"oybekalloyorov/salom/dostonbek/instagram/internal/models"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/pkg/config"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/pkg/helper"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/repository"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/service"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/lib/pq"
+	"github.com/qor/admin"
+	"github.com/qor/qor"
 )
+	type User struct {
+		ID          int       `json:"id"`
+		FullName    string    `json:"full_name"`
+		Username    string    `json:"username"`
+		BirthOfYear int       `json:"birth_of_year"`
+		Bio         string    `json:"bio"`
+		CreatedAt   time.Time `json:"created_at"`
+	}
+
+	func (User) TableName() string {
+		return "instagram_users"
+	}
+	type Post models.Post
+	type Comments models.Comment
+	type Follows models.Follow
+	func (Post) TableName() string{
+		return "post"
+	}
+	func (Comments) TableName() string{
+		return "comments"
+	}
+	func (Follows) TableName() string{
+		return "follows"
+	}
 
 func main() {
 	cfg := config.DBConfig{
@@ -25,7 +56,33 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	
+	// 
+	
+	// 🔹 GORM ulanish
+	dsn := "host=localhost user=instagram password=oybek dbname=instagram port=5432 sslmode=disable"
+	gormDB, err := gorm.Open("postgres", dsn)
+	if err != nil {
+		panic(err)
+	}
 
+	// 🔹 Model yaratish
+	gormDB.AutoMigrate(&User{})
+
+	// 🔹 QOR Admin panel
+	Admin := admin.New(&qor.Config{DB: gormDB})
+	Admin.AddResource(&User{}, &admin.Config{Menu: []string{"User Management"}})
+	Admin.AddResource(&Post{}, &admin.Config{Menu: []string{"User Management"}})
+	Admin.AddResource(&Comments{}, &admin.Config{Menu: []string{"User Management"}})
+	Admin.AddResource(&Follows{}, &admin.Config{Menu: []string{"User Management"}})
+	
+	mux := http.NewServeMux()
+	Admin.MountTo("/admin", mux)
+
+	go func() {
+		http.ListenAndServe(":9000", mux)
+	}()
+	// 
 	// Posts
 	postRepo := repository.NewPostRepo(db)
 	postService := service.NewPostService(postRepo)
@@ -74,5 +131,6 @@ func main() {
 	
 	//Folows
 	router.POST("/api/v1/create-follow", followController.CreateFollowHTTP)
+	
 	router.Run(":8000")
 }
