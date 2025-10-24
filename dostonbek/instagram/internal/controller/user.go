@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/models"
+	"oybekalloyorov/salom/dostonbek/instagram/internal/pkg/response"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/service"
 	"strconv"
 
@@ -39,27 +40,32 @@ func (u *UserController) GetUserByIdHTTP(req *gin.Context){
 	idStr := req.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		req.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		// req.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		response.Fail(req, http.StatusBadRequest, "Invalid user id")
 		return
 	}
 
 	res, err := u.srv.GetUserById(id)
 	if err != nil {
-		req.JSON(http.StatusInternalServerError, err.Error())
+		// req.JSON(http.StatusInternalServerError, err.Error())
+		response.Fail(req, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	req.JSON(http.StatusOK, res)
+	// req.JSON(http.StatusOK, res)
+	response.Success(req, res)
 }
 
 func (u *UserController)GetAllUsers(req *gin.Context){
 	res, err := u.srv.GetAllUsers()
 	if err != nil{
-		req.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// req.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Fail(req, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	req.JSON(http.StatusOK, res)
+	// req.JSON(http.StatusOK, res)
+	response.Success(req, res)
 }
 
 func (u *UserController) UpdateUserHTTP(c *gin.Context){

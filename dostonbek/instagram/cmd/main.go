@@ -71,7 +71,7 @@ func main() {
 
 	// 🔹 QOR Admin panel
 	Admin := admin.New(&qor.Config{DB: gormDB})
-	Admin.AddResource(&User{}, &admin.Config{Menu: []string{"User Management"}})
+	Admin.AddResource(&User{}, &admin.Config{Menu: []string{"User"}})
 	Admin.AddResource(&Post{}, &admin.Config{Menu: []string{"User Management"}})
 	Admin.AddResource(&Comments{}, &admin.Config{Menu: []string{"User Management"}})
 	Admin.AddResource(&Follows{}, &admin.Config{Menu: []string{"User Management"}})
