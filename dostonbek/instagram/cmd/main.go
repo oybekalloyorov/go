@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/controller"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/models"
@@ -43,28 +44,32 @@ import (
 	}
 
 func main() {
-	cfg := config.DBConfig{
-		Host:     "localhost",
-		Port:     5432,
-		User:     "instagram",
-		Password: "oybek",
-		DBName:   "instagram",
-		SSLMode:  "disable",
-	}
+	// cfg := config.DBConfig{
+	// 	Host:     "localhost",
+	// 	Port:     5432,
+	// 	User:     "instagram",
+	// 	Password: "oybek",
+	// 	DBName:   "instagram",
+	// 	SSLMode:  "disable",
+	// }
 
-	db, err := helper.ConnectPostgres(&cfg)
+	cfg := config.LoadConfig()
+
+	db, err := helper.ConnectPostgres(cfg)
 	if err != nil {
 		panic(err)
 	}
-	
+	defer db.Close()
+
+	fmt.Println("Database connection is ready ✅")
 	// 
 	
 	// 🔹 GORM ulanish
-	dsn := "host=localhost user=instagram password=oybek dbname=instagram port=5432 sslmode=disable"
-	gormDB, err := gorm.Open("postgres", dsn)
-	if err != nil {
-		panic(err)
-	}
+	// dsn := "host=localhost user=instagram password=oybek dbname=instagram port=5432 sslmode=disable"
+	gormDB, err := gorm.Open("postgres", db)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	// 🔹 Model yaratish
 	gormDB.AutoMigrate(&User{})

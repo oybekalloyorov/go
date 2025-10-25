@@ -3,6 +3,7 @@ package helper
 import (
 	"database/sql"
 	"fmt"
+	_"github.com/lib/pq"
 	"oybekalloyorov/salom/dostonbek/instagram/internal/pkg/config"
 )
 
@@ -25,5 +26,6 @@ func ConnectPostgres(cfg *config.DBConfig) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
+	fmt.Println("Connected to PostgreSQL successfully")
 	return db, nil
 }
