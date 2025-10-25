@@ -67,9 +67,9 @@ func main() {
 	// 🔹 GORM ulanish
 	// dsn := "host=localhost user=instagram password=oybek dbname=instagram port=5432 sslmode=disable"
 	gormDB, err := gorm.Open("postgres", db)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	if err != nil {
+		panic(err)
+	}
 
 	// 🔹 Model yaratish
 	gormDB.AutoMigrate(&User{})
